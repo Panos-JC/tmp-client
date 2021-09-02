@@ -1,14 +1,7 @@
 import axios from "axios";
-import authHeader from "./authHeader";
-
-let urls = {
-  test: "http://localhost:4000/",
-  development: "http://localhost:4000/",
-  production: "http://localhost:4000/",
-};
 
 export const client = axios.create({
-  baseURL: urls[process.env.NODE_ENV],
+  baseURL: process.env.API_URL,
   headers: { Accept: "application/json", "Content-Type": "application/json" },
 });
 
