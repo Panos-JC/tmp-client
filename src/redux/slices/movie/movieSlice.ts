@@ -80,11 +80,6 @@ export const movieSlice = createSlice({
       state.loading = false;
     });
 
-    builder.addCase(see.rejected, (state, { payload }) => {
-      if (payload) state.error = payload.message;
-      state.loading = false;
-    });
-
     // Unsee movie
     builder.addCase(unsee.pending, state => {
       state.loading = true;
