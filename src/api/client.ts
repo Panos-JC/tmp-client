@@ -1,9 +1,11 @@
 import axios from "axios";
 
 export const client = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: process.env.API_URL, // http://localhost:4000/
   headers: { Accept: "application/json", "Content-Type": "application/json" },
 });
+
+console.log(process.env.API_URL);
 
 client.interceptors.request.use(
   config => {
