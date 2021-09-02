@@ -1,5 +1,5 @@
 // React
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout } from "../../components/Layout/Layout";
 import {
   Heading,
@@ -30,43 +30,54 @@ import { movieGenres } from "../../utils/constants/genreIds";
 import { numberToGender } from "../../utils/numberToGender";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import getImageUrl from "../../utils/getImageUrl";
+import { CastInterface } from "../../redux/slices/person/types";
 
 interface MovieProps {}
 
 const Cast: React.FC<MovieProps> = () => {
   const { query } = useRouter();
 
+  const [sortedCreditsByRating, setSortedCreditsByRating] = useState<
+    Partial<CastInterface>[]
+  >([]);
+  const [sortedCreditsByDate, setSortedCreditsByDate] = useState<
+    Partial<CastInterface>[]
+  >([]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchPersonDetails({ id: query.id as string }));
     dispatch(fetchPersonCredits({ id: query.id as string }));
-  }, []);
+  }, [query]);
 
   const { personDetails, personCredits } = useAppSelector(
     state => state.person
   );
 
-  const { cast } = personCredits;
+  useEffect(() => {
+    const { cast } = personCredits;
 
-  console.log(cast);
+    if (cast) {
+      const sortedByRating = [...cast]
+        .sort((a, b) => (a.vote_count < b.vote_count ? 1 : -1))
+        .slice(0, 7);
 
-  const sortedByRating = [...cast]
-    .sort((a, b) => (a.vote_count < b.vote_count ? 1 : -1))
-    .slice(0, 7);
+      setSortedCreditsByRating(sortedByRating);
 
-  const sortedByDate = [...cast].sort((a, b) => {
-    if (a.first_air_date || a.release_date) {
-      return (
-        new Date(b.first_air_date || b.release_date).getTime() -
-        new Date(a.first_air_date || a.release_date).getTime()
-      );
-    } else {
-      return -1;
+      const sortedByDate = [...cast].sort((a, b) => {
+        if (a.first_air_date || a.release_date) {
+          return (
+            new Date(b.first_air_date || b.release_date).getTime() -
+            new Date(a.first_air_date || a.release_date).getTime()
+          );
+        } else {
+          return -1;
+        }
+      });
+
+      setSortedCreditsByDate(sortedByDate);
     }
-  });
-
-  console.log(personCredits);
+  }, [personCredits]);
   return (
     <Layout>
       <Grid templateColumns={{ base: "1fr", md: "repeat(4, 1fr)" }} gap={6}>
@@ -91,15 +102,15 @@ const Cast: React.FC<MovieProps> = () => {
             </div>
           </VStack>
           <Carousel title="Known for:">
-            {sortedByRating.map((credit, i) => (
-              <Card>
+            {sortedCreditsByRating.map((credit, i) => (
+              <Card key={i}>
                 <Card.CardImage
                   src={getImageUrl(500, credit.backdrop_path)}
                   alt={credit.title}
                 />
                 <Card.CardTitle>{credit.title || credit.name}</Card.CardTitle>
                 <Card.CardSubtitle>
-                  {credit.genre_ids.map(id => movieGenres[id]).join(", ")}
+                  {/* {credit.genre_ids.map(id => movieGenres[id]).join(", ")} */}
                 </Card.CardSubtitle>
               </Card>
             ))}
@@ -137,33 +148,31 @@ const Cast: React.FC<MovieProps> = () => {
             <Heading mb="3">Filmography</Heading>
             <Table variant="unstyled">
               <Tbody>
-                {sortedByDate.map((credit, index) => {
+                {sortedCreditsByDate.map((credit, index) => {
                   let year =
                     new Date(credit.first_air_date).getFullYear() ||
                     new Date(credit.release_date).getFullYear();
                   let nextYear = year;
-                  if (sortedByDate[index + 1]) {
+                  if (sortedCreditsByDate[index + 1]) {
                     nextYear =
                       new Date(
-                        sortedByDate[index + 1].first_air_date
+                        sortedCreditsByDate[index + 1].first_air_date
                       ).getFullYear() ||
                       new Date(
-                        sortedByDate[index + 1].release_date
+                        sortedCreditsByDate[index + 1].release_date
                       ).getFullYear();
                   }
 
                   return (
-                    <>
-                      <Tr
-                        key={index}
-                        borderBottom={
-                          year !== nextYear ? `1px solid #222636` : "0px"
-                        }
-                      >
-                        <Td>{year || "-"}</Td>
-                        <Td>{credit.title || credit.name}</Td>
-                      </Tr>
-                    </>
+                    <Tr
+                      key={index}
+                      borderBottom={
+                        year !== nextYear ? `1px solid #222636` : "0px"
+                      }
+                    >
+                      <Td>{year || "-"}</Td>
+                      <Td>{credit.title || credit.name}</Td>
+                    </Tr>
                   );
                 })}
               </Tbody>
