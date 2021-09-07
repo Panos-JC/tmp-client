@@ -47,22 +47,4 @@ export const WithActions: React.VFC<{}> = () => (
     </Card.CardActionArea>
   </Card>
 );
-export const Loading: React.VFC<{}> = () => (
-  <Card>
-    <Card.CardImage
-      src="https://via.placeholder.com/300.png"
-      alt=""
-      isLoading={true}
-    />
-    <Card.CardTitle isLoading={true}>Title</Card.CardTitle>
-    <Card.CardSubtitle isLoading={true}>Subtitle</Card.CardSubtitle>
-    <Card.CardActionArea>
-      <Card.CardPrimaryActions>
-        <Button>Primary</Button>
-      </Card.CardPrimaryActions>
-      <Card.CardSecondaryActions>
-        <Button>Secondary</Button>
-      </Card.CardSecondaryActions>
-    </Card.CardActionArea>
-  </Card>
-);
+export const Loading: React.VFC<{}> = () => <Card loading />;

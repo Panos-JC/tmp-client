@@ -49,8 +49,8 @@ export default {
   },
 };
 
-const TheSlideshow: Story = ({ slides = slidesArray }) => (
-  <Slideshow slides={slides} />
+const TheSlideshow: Story = ({ slides = slidesArray, loading }) => (
+  <Slideshow slides={slides} loading={loading} />
 );
 
 export const Default = TheSlideshow.bind({});
