@@ -17,7 +17,7 @@ const initialState: TvState = {
   tv: {
     popularTv: [],
     topRatedTv: [],
-    loading: false,
+    loading: true,
   },
   tvDetails: {
     tvData: initialTvDetails,

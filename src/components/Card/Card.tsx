@@ -1,5 +1,5 @@
 import { LinkBox } from "@chakra-ui/layout";
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import { Box, Skeleton, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 import { CardActionArea, ICardActionAreaProps } from "./CardActionArea";
 import { CardImage, ICardImageProps } from "./CardImage";
@@ -26,13 +26,38 @@ interface ICardComposition {
 interface ICardProps {
   width?: string | {};
   minW?: string;
+  loading?: boolean;
 }
 
 export const Card: React.FC<ICardProps> & ICardComposition = ({
   children,
   width = "260px",
   minW = "inherit",
+  loading = false,
 }) => {
+  if (loading) {
+    return (
+      <LinkBox minW={minW} h="full">
+        <Box
+          bg={useColorModeValue("white", "gray.800")}
+          width={width}
+          rounded="lg"
+          shadow="lg"
+          onClick={() => {}}
+          h="full"
+        >
+          <CardImage src="" alt="" isLoading={true} />
+          <CardTitle isLoading={true} />
+          <CardSubtitle isLoading={true} />
+          <CardActionArea>
+            <CardSecondaryActions>
+              <Skeleton w="32px" h="32px" borderRadius="lg" />
+            </CardSecondaryActions>
+          </CardActionArea>
+        </Box>
+      </LinkBox>
+    );
+  }
   return (
     <LinkBox minW={minW} h="full">
       <Box

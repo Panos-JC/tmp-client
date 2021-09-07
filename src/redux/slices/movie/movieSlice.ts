@@ -18,7 +18,7 @@ interface MovieState {
 }
 
 const initialState: MovieState = {
-  movies: { popularMovies: [], topRatedMovies: [], loading: false },
+  movies: { popularMovies: [], topRatedMovies: [], loading: true },
   movieDetails: {
     movieData: initialMovieDetails,
     movieCredits: { id: 0, cast: [], crew: [] },

@@ -16,7 +16,7 @@ interface PersonCardProps {
   img: string;
   title: string;
   subtitle: string;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const PersonCard: React.FC<PersonCardProps> = ({
@@ -24,7 +24,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({
   img,
   title,
   subtitle,
-  isLoading = false,
+  loading = false,
 }) => {
   return (
     <Box
@@ -34,8 +34,8 @@ export const PersonCard: React.FC<PersonCardProps> = ({
       shadow="lg"
       onClick={() => {}}
     >
-      {isLoading ? (
-        <Skeleton pt="56%" width="180px" roundedTop="lg" />
+      {loading ? (
+        <Skeleton pt="56%" width="180px" h="270px" roundedTop="lg" />
       ) : (
         <Image
           src={img}
@@ -49,7 +49,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({
 
       <Box p="4">
         <Box mt="1" lineHeight="tight" isTruncated>
-          {isLoading ? (
+          {loading ? (
             <Skeleton height="20px" mb={3} />
           ) : (
             <>

@@ -1,9 +1,6 @@
-import { GetStaticPaths, GetStaticProps } from "next";
-import React from "react";
-import { Jumbotron } from "../../../components/Jumbotron/Jumbotron";
-import { Layout } from "../../../components/Layout/Layout";
-import { Credits, MovieDetails } from "../../../redux/slices/movie/types";
-import { wrapper } from "../../../redux/store";
+// React / Next
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Heading,
   HStack,
@@ -15,24 +12,42 @@ import {
   Box,
   useColorModeValue,
   Avatar,
+  SkeletonCircle,
+  Skeleton,
 } from "@chakra-ui/react";
-import { fetchMovie } from "../../../redux/slices/movie/actions/fetchMovie";
 import { BsArrowLeft } from "react-icons/bs";
+
+// Components
+import { Jumbotron } from "../../../components/Jumbotron/Jumbotron";
+import { Layout } from "../../../components/Layout/Layout";
+
+// Redux
+import { fetchMovie } from "../../../redux/slices/movie/actions/fetchMovie";
+
+// Local Files
 import getImageUrl from "../../../utils/getImageUrl";
-import { useRouter } from "next/router";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 
-interface MovieProps {
-  movieDetails: MovieDetails;
-  movieCredits: Credits;
-}
-
-const Cast: React.FC<MovieProps> = ({ movieDetails, movieCredits }) => {
+const Cast: React.FC = () => {
   const router = useRouter();
+
+  const { id } = router.query;
+
+  const dispatch = useAppDispatch();
+
+  const { movieData, movieCredits, loading } = useAppSelector(
+    state => state.movie.movieDetails
+  );
+
+  useEffect(() => {
+    if (id) dispatch(fetchMovie({ id: id as string }));
+  }, [id]);
+
   return (
     <Layout>
       <Jumbotron
         img="https://www.themoviedb.org/t/p/original/620hnMVLu6RSZW6a5rwO8gqpt0t.jpg"
-        loading={false}
+        loading={loading}
         h="150"
         p="0"
       >
@@ -40,11 +55,11 @@ const Cast: React.FC<MovieProps> = ({ movieDetails, movieCredits }) => {
           <Image
             w="20"
             ml="5"
-            src={getImageUrl(200, movieDetails.poster_path)}
+            src={getImageUrl(200, movieData.poster_path)}
             alt="Segun Adebayo"
           />
-          <VStack>
-            <Heading>{movieDetails.title}</Heading>
+          <VStack align="flex-start">
+            <Heading>{movieData.title}</Heading>
             <Button
               leftIcon={<BsArrowLeft />}
               variant="link"
@@ -59,24 +74,43 @@ const Cast: React.FC<MovieProps> = ({ movieDetails, movieCredits }) => {
         Cast
       </Heading>
       <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-        {movieCredits.cast.map((cast, i) => (
-          <Box
-            p="4"
-            w="100%"
-            bg={useColorModeValue("white", "gray.800")}
-            rounded="lg"
-            shadow="lg"
-            key={i}
-          >
-            <HStack spacing="5">
-              <Avatar src={getImageUrl(185, cast.profile_path)} />
-              <VStack align="start" spacing="0">
-                <Text fontWeight="bold">{cast.name}</Text>
-                <Text>{cast.character}</Text>
-              </VStack>
-            </HStack>
-          </Box>
-        ))}
+        {loading
+          ? [...Array(50)].map(i => (
+              <Box
+                p="4"
+                w="100%"
+                bg="gray.800"
+                rounded="lg"
+                shadow="lg"
+                key={i}
+              >
+                <HStack spacing="5">
+                  <SkeletonCircle size="48px" />
+                  <VStack align="start" spacing="3" flex="1">
+                    <Skeleton h="18px" w="60%" />
+                    <Skeleton h="18px" w="45%" />
+                  </VStack>
+                </HStack>
+              </Box>
+            ))
+          : movieCredits.cast.map((cast, i) => (
+              <Box
+                p="4"
+                w="100%"
+                bg="gray.800"
+                rounded="lg"
+                shadow="lg"
+                key={i}
+              >
+                <HStack spacing="5">
+                  <Avatar src={getImageUrl(185, cast.profile_path)} />
+                  <VStack align="start" spacing="0">
+                    <Text fontWeight="bold">{cast.name}</Text>
+                    <Text>{cast.character}</Text>
+                  </VStack>
+                </HStack>
+              </Box>
+            ))}
       </Grid>
       <Heading mt="6" mb="5">
         Crew
@@ -103,28 +137,6 @@ const Cast: React.FC<MovieProps> = ({ movieDetails, movieCredits }) => {
       </Grid>
     </Layout>
   );
-};
-
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
-  store => async ({ params }) => {
-    const { id } = params;
-
-    await store.dispatch(fetchMovie({ id: id as string }));
-
-    return {
-      props: {
-        movieDetails: store.getState().movie.movieDetails.movieData,
-        movieCredits: store.getState().movie.movieDetails.movieCredits,
-      },
-    };
-  }
-);
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
 };
 
 export default Cast;

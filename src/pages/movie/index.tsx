@@ -29,7 +29,9 @@ const Movies: React.FC<moviesProps> = ({}) => {
     dispatch(fetchMovieData({ page: 1 }));
   }, []);
 
-  const { movies, loading } = useAppSelector(state => state.movie);
+  const { popularMovies, topRatedMovies, loading } = useAppSelector(
+    state => state.movie.movies
+  );
 
   const handleWatchMovie = (media: Movie) => {
     dispatch(
@@ -49,78 +51,96 @@ const Movies: React.FC<moviesProps> = ({}) => {
 
   return (
     <Layout>
-      <Slideshow slides={movies.popularMovies.slice(0, 5)} />
+      <Slideshow slides={popularMovies.slice(0, 5)} loading={loading} />
       <Carousel title="Popular Movies" href="/movie/popular">
-        {movies.popularMovies.map(media => (
-          <Card key={media.id}>
-            <Card.CardImage
-              src={getImageUrl(500, media.backdrop_path)}
-              alt={media.title}
-              isLoading={loading}
-            />
-            <Card.CardTitle isLoading={loading} href={`/movie/${media.id}`}>
-              {media.title}
-            </Card.CardTitle>
-            <Card.CardSubtitle isLoading={loading}>
-              {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-            </Card.CardSubtitle>
-            <Card.CardActionArea>
-              <Card.CardSecondaryActions>
-                {media.seen ? (
-                  <TooltipIconButton
-                    icon={<ImCheckmark />}
-                    variant="primary"
-                    label="Unsee"
-                    onClick={() => handleUnwatchMovie(media)}
-                  />
-                ) : (
-                  <TooltipIconButton
-                    icon={<ImCheckmark />}
-                    variant="solid"
-                    label="Mark as seen"
-                    onClick={() => handleWatchMovie(media)}
-                  />
-                )}
-              </Card.CardSecondaryActions>
-            </Card.CardActionArea>
-          </Card>
-        ))}
+        {popularMovies.length ? (
+          popularMovies.map(media => (
+            <Card key={media.id}>
+              <Card.CardImage
+                src={getImageUrl(500, media.backdrop_path)}
+                alt={media.title}
+              />
+              <Card.CardTitle href={`/movie/${media.id}`}>
+                {media.title}
+              </Card.CardTitle>
+              <Card.CardSubtitle>
+                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+              </Card.CardSubtitle>
+              <Card.CardActionArea>
+                <Card.CardSecondaryActions>
+                  {media.seen ? (
+                    <TooltipIconButton
+                      icon={<ImCheckmark />}
+                      variant="primary"
+                      label="Unsee"
+                      onClick={() => handleUnwatchMovie(media)}
+                    />
+                  ) : (
+                    <TooltipIconButton
+                      icon={<ImCheckmark />}
+                      variant="solid"
+                      label="Mark as seen"
+                      onClick={() => handleWatchMovie(media)}
+                    />
+                  )}
+                </Card.CardSecondaryActions>
+              </Card.CardActionArea>
+            </Card>
+          ))
+        ) : (
+          <>
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+          </>
+        )}
       </Carousel>
       <Carousel title="Top Rated Movies" href="/movie/topRated">
-        {movies.topRatedMovies.map(media => (
-          <Card key={media.id}>
-            <Card.CardImage
-              src={getImageUrl(500, media.backdrop_path)}
-              alt={media.title}
-              isLoading={loading}
-            />
-            <Card.CardTitle isLoading={loading} href={`/movie/${media.id}`}>
-              {media.title}
-            </Card.CardTitle>
-            <Card.CardSubtitle isLoading={loading}>
-              {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-            </Card.CardSubtitle>
-            <Card.CardActionArea>
-              <Card.CardSecondaryActions>
-                {media.seen ? (
-                  <TooltipIconButton
-                    icon={<ImCheckmark />}
-                    variant="primary"
-                    label="Unsee"
-                    onClick={() => handleUnwatchMovie(media)}
-                  />
-                ) : (
-                  <TooltipIconButton
-                    icon={<ImCheckmark />}
-                    variant="solid"
-                    label="Mark as seen"
-                    onClick={() => handleWatchMovie(media)}
-                  />
-                )}
-              </Card.CardSecondaryActions>
-            </Card.CardActionArea>
-          </Card>
-        ))}
+        {topRatedMovies.length ? (
+          topRatedMovies.map(media => (
+            <Card key={media.id}>
+              <Card.CardImage
+                src={getImageUrl(500, media.backdrop_path)}
+                alt={media.title}
+              />
+              <Card.CardTitle href={`/movie/${media.id}`}>
+                {media.title}
+              </Card.CardTitle>
+              <Card.CardSubtitle>
+                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+              </Card.CardSubtitle>
+              <Card.CardActionArea>
+                <Card.CardSecondaryActions>
+                  {media.seen ? (
+                    <TooltipIconButton
+                      icon={<ImCheckmark />}
+                      variant="primary"
+                      label="Unsee"
+                      onClick={() => handleUnwatchMovie(media)}
+                    />
+                  ) : (
+                    <TooltipIconButton
+                      icon={<ImCheckmark />}
+                      variant="solid"
+                      label="Mark as seen"
+                      onClick={() => handleWatchMovie(media)}
+                    />
+                  )}
+                </Card.CardSecondaryActions>
+              </Card.CardActionArea>
+            </Card>
+          ))
+        ) : (
+          <>
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+          </>
+        )}
       </Carousel>
     </Layout>
   );

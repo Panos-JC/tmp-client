@@ -11,6 +11,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Skeleton,
 } from "@chakra-ui/react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { FaPlay } from "react-icons/fa";
@@ -38,9 +39,10 @@ const arrowStyles = {
 
 interface SlideshowProps {
   slides: Movie[] | Tv[];
+  loading: boolean;
 }
 
-export const Slideshow: React.FC<SlideshowProps> = ({ slides }) => {
+export const Slideshow: React.FC<SlideshowProps> = ({ slides, loading }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slidesCount = slides.length;
@@ -60,12 +62,37 @@ export const Slideshow: React.FC<SlideshowProps> = ({ slides }) => {
     ml: `-${currentSlide * 100}%`,
   };
 
+  if (loading) {
+    return (
+      <Box h="450px" w="full" bg="backgroundLight" borderRadius="lg">
+        <VStack
+          align={{ base: "center", md: "flex-start" }}
+          pos="relative"
+          justify="center"
+          boxSize="full"
+          borderRadius="lg"
+          p={{ base: "10", md: "100" }}
+          spacing="6"
+        >
+          <Skeleton height="21px" minW="20%" />
+          <Skeleton height="40px" minW="40%" />
+          <VStack align="flex-start" w="full">
+            <Skeleton height="16px" minW="50%" />
+            <Skeleton height="16px" minW="50%" />
+            <Skeleton height="16px" minW="50%" />
+            <Skeleton height="16px" minW="35%" />
+          </VStack>
+        </VStack>
+      </Box>
+    );
+  }
+
   return (
     <Flex w="full" pos="relative" overflow="hidden" shadow="lg">
       <Flex h="450px" w="full" {...carouselStyle}>
-        {slides.map((slide, sid) => (
+        {slides.map((slide, i) => (
           <Box
-            key={`slide-${sid}`}
+            key={`slide-${i}`}
             boxSize="full"
             backgroundImage={`linear-gradient(to right, rgba(14, 17, 26, 0.8) 0%, rgba(14, 17, 26, 0) 100%), url(${getImageUrl(
               1280,
@@ -99,26 +126,26 @@ export const Slideshow: React.FC<SlideshowProps> = ({ slides }) => {
                 ))}
               </Breadcrumb>
               <Heading fontWeight="black">{slide.title || slide.name}</Heading>
-              <HStack spacing="6">
-                <Button
-                  leftIcon={<FaPlay />}
-                  w="160px"
-                  iconSpacing="10%"
-                  bg="rgba(34, 38, 54, 0.7)"
-                  size="sm"
-                >
-                  Watch Trailer
-                </Button>
-                <Button
-                  leftIcon={<IoMdCheckmark />}
-                  w="160px"
-                  iconSpacing="10%"
-                  bg="rgba(34, 38, 54, 0.7)"
-                  size="sm"
-                >
-                  Mark as Seen
-                </Button>
-              </HStack>
+              {/* <HStack spacing="6">
+                  <Button
+                    leftIcon={<FaPlay />}
+                    w="160px"
+                    iconSpacing="10%"
+                    bg="rgba(34, 38, 54, 0.7)"
+                    size="sm"
+                  >
+                    Watch Trailer
+                  </Button>
+                  <Button
+                    leftIcon={<IoMdCheckmark />}
+                    w="160px"
+                    iconSpacing="10%"
+                    bg="rgba(34, 38, 54, 0.7)"
+                    size="sm"
+                  >
+                    Mark as Seen
+                  </Button>
+                </HStack> */}
               <Text
                 lineHeight="1.1"
                 color="gray.300"

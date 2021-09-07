@@ -28,8 +28,12 @@ import { unwatchTv } from "../redux/slices/tv/actions/unwatchTv";
 export default function Home() {
   const dispatch = useAppDispatch();
 
-  const { movies } = useAppSelector(state => state.movie);
-  const { tv } = useAppSelector(state => state.tv);
+  const { popularMovies, loading: moviesLoading } = useAppSelector(
+    state => state.movie.movies
+  );
+  const { popularTv, loading: tvLoading } = useAppSelector(
+    state => state.tv.tv
+  );
 
   useEffect(() => {
     dispatch(fetchMovieData({ page: 1 }));
@@ -77,81 +81,97 @@ export default function Home() {
       </Head>
 
       <Layout>
-        <Slideshow slides={movies.popularMovies.slice(0, 5)} />
+        <Slideshow slides={popularMovies.slice(0, 5)} loading={moviesLoading} />
         <Carousel title="Popular Movies" href="/movie/popular">
-          {movies.popularMovies.map(media => (
-            <Card key={media.id}>
-              <Card.CardImage
-                src={getImageUrl(500, media.backdrop_path)}
-                alt={media.title}
-                isLoading={movies.loading}
-              />
-              <Card.CardTitle
-                isLoading={movies.loading}
-                href={`/movie/${media.id}`}
-              >
-                {media.title}
-              </Card.CardTitle>
-              <Card.CardSubtitle isLoading={movies.loading}>
-                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-              </Card.CardSubtitle>
-              <Card.CardActionArea>
-                <Card.CardSecondaryActions>
-                  {media.seen ? (
-                    <TooltipIconButton
-                      icon={<ImCheckmark />}
-                      variant="primary"
-                      label="Unsee"
-                      onClick={() => handleUnsee(media)}
-                    />
-                  ) : (
-                    <TooltipIconButton
-                      icon={<ImCheckmark />}
-                      variant="solid"
-                      label="Mark as seen"
-                      onClick={() => handleSee(media)}
-                    />
-                  )}
-                </Card.CardSecondaryActions>
-              </Card.CardActionArea>
-            </Card>
-          ))}
+          {popularMovies.length ? (
+            popularMovies.map(media => (
+              <Card key={media.id}>
+                <Card.CardImage
+                  src={getImageUrl(500, media.backdrop_path)}
+                  alt={media.title}
+                />
+                <Card.CardTitle href={`/movie/${media.id}`}>
+                  {media.title}
+                </Card.CardTitle>
+                <Card.CardSubtitle>
+                  {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+                </Card.CardSubtitle>
+                <Card.CardActionArea>
+                  <Card.CardSecondaryActions>
+                    {media.seen ? (
+                      <TooltipIconButton
+                        icon={<ImCheckmark />}
+                        variant="primary"
+                        label="Unsee"
+                        onClick={() => handleUnsee(media)}
+                      />
+                    ) : (
+                      <TooltipIconButton
+                        icon={<ImCheckmark />}
+                        variant="solid"
+                        label="Mark as seen"
+                        onClick={() => handleSee(media)}
+                      />
+                    )}
+                  </Card.CardSecondaryActions>
+                </Card.CardActionArea>
+              </Card>
+            ))
+          ) : (
+            <>
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+            </>
+          )}
         </Carousel>
         <Carousel title="Popular Tv" href="/tv/popular">
-          {tv.popularTv.map(media => (
-            <Card key={media.id}>
-              <Card.CardImage
-                src={getImageUrl(500, media.backdrop_path)}
-                alt={media.name}
-                isLoading={tv.loading}
-              />
-              <Card.CardTitle isLoading={tv.loading} href={`/tv/${media.id}`}>
-                {media.name}
-              </Card.CardTitle>
-              <Card.CardSubtitle isLoading={tv.loading}>
-                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-              </Card.CardSubtitle>
-              <Card.CardActionArea>
-                <Card.CardSecondaryActions>
-                  {media.seen ? (
-                    <TooltipIconButton
-                      icon={<ImCheckmark />}
-                      variant="primary"
-                      label="Unsee"
-                      onClick={() => handleUnwatchTv(media)}
-                    />
-                  ) : (
-                    <TooltipIconButton
-                      icon={<ImCheckmark />}
-                      variant="solid"
-                      label="Mark as seen"
-                      onClick={() => handleWatchTv(media)}
-                    />
-                  )}
-                </Card.CardSecondaryActions>
-              </Card.CardActionArea>
-            </Card>
-          ))}
+          {popularMovies.length ? (
+            popularTv.map(media => (
+              <Card key={media.id}>
+                <Card.CardImage
+                  src={getImageUrl(500, media.backdrop_path)}
+                  alt={media.name}
+                  isLoading={tvLoading}
+                />
+                <Card.CardTitle isLoading={tvLoading} href={`/tv/${media.id}`}>
+                  {media.name}
+                </Card.CardTitle>
+                <Card.CardSubtitle isLoading={tvLoading}>
+                  {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+                </Card.CardSubtitle>
+                <Card.CardActionArea>
+                  <Card.CardSecondaryActions>
+                    {media.seen ? (
+                      <TooltipIconButton
+                        icon={<ImCheckmark />}
+                        variant="primary"
+                        label="Unsee"
+                        onClick={() => handleUnwatchTv(media)}
+                      />
+                    ) : (
+                      <TooltipIconButton
+                        icon={<ImCheckmark />}
+                        variant="solid"
+                        label="Mark as seen"
+                        onClick={() => handleWatchTv(media)}
+                      />
+                    )}
+                  </Card.CardSecondaryActions>
+                </Card.CardActionArea>
+              </Card>
+            ))
+          ) : (
+            <>
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+              <Card loading={moviesLoading} />
+            </>
+          )}
         </Carousel>
       </Layout>
     </div>

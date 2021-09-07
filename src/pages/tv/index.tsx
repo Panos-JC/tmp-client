@@ -46,60 +46,80 @@ const TvShow: React.FC<TvShowProps> = ({}) => {
 
   return (
     <Layout>
-      <Slideshow slides={popularTv.slice(0, 5)} />
+      <Slideshow slides={popularTv.slice(0, 5)} loading={loading} />
       <Carousel title="Popular Tv" href="/tv/popular">
-        {popularTv.map(media => (
-          <Card key={media.id}>
-            <Card.CardImage
-              src={getImageUrl(500, media.backdrop_path)}
-              alt={media.name}
-              isLoading={loading}
-            />
-            <Card.CardTitle isLoading={loading} href={`/tv/${media.id}`}>
-              {media.name}
-            </Card.CardTitle>
-            <Card.CardSubtitle isLoading={loading}>
-              {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-            </Card.CardSubtitle>
-            <Card.CardActionArea>
-              <Card.CardSecondaryActions>
-                <TooltipIconButton
-                  icon={<ImCheckmark />}
-                  variant={media.seen ? "primary" : "solid"}
-                  label={media.seen ? "Unsee" : "Mark as seen"}
-                  onClick={() => handleWatchTv(media)}
-                />
-              </Card.CardSecondaryActions>
-            </Card.CardActionArea>
-          </Card>
-        ))}
+        {popularTv.length ? (
+          popularTv.map(media => (
+            <Card key={media.id}>
+              <Card.CardImage
+                src={getImageUrl(500, media.backdrop_path)}
+                alt={media.name}
+                isLoading={loading}
+              />
+              <Card.CardTitle isLoading={loading} href={`/tv/${media.id}`}>
+                {media.name}
+              </Card.CardTitle>
+              <Card.CardSubtitle isLoading={loading}>
+                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+              </Card.CardSubtitle>
+              <Card.CardActionArea>
+                <Card.CardSecondaryActions>
+                  <TooltipIconButton
+                    icon={<ImCheckmark />}
+                    variant={media.seen ? "primary" : "solid"}
+                    label={media.seen ? "Unsee" : "Mark as seen"}
+                    onClick={() => handleWatchTv(media)}
+                  />
+                </Card.CardSecondaryActions>
+              </Card.CardActionArea>
+            </Card>
+          ))
+        ) : (
+          <>
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+          </>
+        )}
       </Carousel>
       <Carousel title="Top Rated Tv" href="/tv/topRated">
-        {topRatedTv.map(media => (
-          <Card key={media.id}>
-            <Card.CardImage
-              src={getImageUrl(500, media.backdrop_path)}
-              alt={media.name}
-              isLoading={loading}
-            />
-            <Card.CardTitle isLoading={loading} href={`/tv/${media.id}`}>
-              {media.name}
-            </Card.CardTitle>
-            <Card.CardSubtitle isLoading={loading}>
-              {media.genre_ids.map(id => movieGenres[id]).join(", ")}
-            </Card.CardSubtitle>
-            <Card.CardActionArea>
-              <Card.CardSecondaryActions>
-                <TooltipIconButton
-                  icon={<ImCheckmark />}
-                  variant={media.seen ? "primary" : "solid"}
-                  label={media.seen ? "Unsee" : "Mark as seen"}
-                  onClick={() => handleWatchTv(media)}
-                />
-              </Card.CardSecondaryActions>
-            </Card.CardActionArea>
-          </Card>
-        ))}
+        {topRatedTv.length ? (
+          topRatedTv.map(media => (
+            <Card key={media.id}>
+              <Card.CardImage
+                src={getImageUrl(500, media.backdrop_path)}
+                alt={media.name}
+                isLoading={loading}
+              />
+              <Card.CardTitle isLoading={loading} href={`/tv/${media.id}`}>
+                {media.name}
+              </Card.CardTitle>
+              <Card.CardSubtitle isLoading={loading}>
+                {media.genre_ids.map(id => movieGenres[id]).join(", ")}
+              </Card.CardSubtitle>
+              <Card.CardActionArea>
+                <Card.CardSecondaryActions>
+                  <TooltipIconButton
+                    icon={<ImCheckmark />}
+                    variant={media.seen ? "primary" : "solid"}
+                    label={media.seen ? "Unsee" : "Mark as seen"}
+                    onClick={() => handleWatchTv(media)}
+                  />
+                </Card.CardSecondaryActions>
+              </Card.CardActionArea>
+            </Card>
+          ))
+        ) : (
+          <>
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+            <Card loading={loading} />
+          </>
+        )}
       </Carousel>
     </Layout>
   );
