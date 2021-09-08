@@ -1,5 +1,5 @@
 // React / Next
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import {
   Heading,
@@ -23,25 +23,24 @@ import { Layout } from "../../../components/Layout/Layout";
 
 // Redux
 import { fetchMovie } from "../../../redux/slices/movie/actions/fetchMovie";
+import { wrapper } from "../../../redux/store";
+import { Credits, MovieDetails } from "../../../redux/slices/movie/types";
 
 // Local Files
 import getImageUrl from "../../../utils/getImageUrl";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 
-const Cast: React.FC = () => {
+interface MovieProps {
+  movie: {
+    movieData: MovieDetails;
+    movieCredits: Credits;
+    loading: boolean;
+  };
+}
+
+const Cast: React.FC<MovieProps> = ({ movie }) => {
   const router = useRouter();
 
-  const { id } = router.query;
-
-  const dispatch = useAppDispatch();
-
-  const { movieData, movieCredits, loading } = useAppSelector(
-    state => state.movie.movieDetails
-  );
-
-  useEffect(() => {
-    if (id) dispatch(fetchMovie({ id: id as string }));
-  }, [id]);
+  const { movieData, movieCredits, loading } = movie;
 
   return (
     <Layout>
@@ -140,3 +139,17 @@ const Cast: React.FC = () => {
 };
 
 export default Cast;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async ({ params }) => {
+    const { id } = params;
+
+    await store.dispatch(fetchMovie({ id: id as string }));
+
+    return {
+      props: {
+        movie: store.getState().movie.movieDetails,
+      },
+    };
+  }
+);

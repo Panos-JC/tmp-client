@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { AnyAction, createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 import { fetchMovie } from "./actions/fetchMovie";
 import { fetchMovieData } from "./actions/fetchMovieData";
@@ -33,9 +33,10 @@ export const movieSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(HYDRATE, (state, action) => {
+    builder.addCase(HYDRATE, (state, action: AnyAction) => {
       return {
         ...state,
+        ...action.payload.movie, // update client state with server state
       };
     });
     // Fetch movie data

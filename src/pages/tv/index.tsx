@@ -18,19 +18,28 @@ import { Tv } from "../../redux/slices/tv/types";
 import { movieGenres } from "../../utils/constants/genreIds";
 import getImageUrl from "../../utils/getImageUrl";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { wrapper } from "../../redux/store";
 
-interface TvShowProps {}
+interface TvShowProps {
+  tvData: {
+    popularTv: Tv[];
+    topRatedTv: Tv[];
+    loading: boolean;
+  };
+}
 
-const TvShow: React.FC<TvShowProps> = ({}) => {
+const TvShow: React.FC<TvShowProps> = ({ tvData }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(fetchTvData({ page: 1 }));
-  }, []);
+  const { popularTv, topRatedTv, loading } = tvData;
 
-  const { popularTv, topRatedTv, loading } = useAppSelector(
-    state => state.tv.tv
-  );
+  // useEffect(() => {
+  //   dispatch(fetchTvData({ page: 1 }));
+  // }, []);
+
+  // const { popularTv, topRatedTv, loading } = useAppSelector(
+  //   state => state.tv.tv
+  // );
 
   const handleWatchTv = (media: Tv) => {
     dispatch(
@@ -126,3 +135,15 @@ const TvShow: React.FC<TvShowProps> = ({}) => {
 };
 
 export default TvShow;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async () => {
+    await store.dispatch(fetchTvData({ page: 1 }));
+
+    return {
+      props: {
+        tvData: store.getState().tv.tv,
+      },
+    };
+  }
+);

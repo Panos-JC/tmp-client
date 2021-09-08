@@ -1,29 +1,41 @@
-import { Grid } from "@chakra-ui/react";
+// React / next
 import React, { useEffect } from "react";
+import { Grid } from "@chakra-ui/react";
 import { ImCheckmark } from "react-icons/im";
+
+// Components
 import { Card } from "../../components/Card/Card";
 import { Layout } from "../../components/Layout/Layout";
 import { TooltipIconButton } from "../../components/TooltipIconButton/TooltipIconButton";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+
+// Redux
 import { fetchMovieData } from "../../redux/slices/movie/actions/fetchMovieData";
 import { see } from "../../redux/slices/movie/actions/see";
 import { unsee } from "../../redux/slices/movie/actions/unsee";
 import { Movie } from "../../redux/slices/movie/types";
+import { wrapper } from "../../redux/store";
+
+// Local files
+import { useAppDispatch } from "../../hooks/hooks";
 import { movieGenres } from "../../utils/constants/genreIds";
 import getImageUrl from "../../utils/getImageUrl";
 
-interface PopularProps {}
+interface PopularProps {
+  movieData: {
+    popularMovies: Movie[];
+    topRatedMovies: Movie[];
+    loading: boolean;
+  };
+}
 
-const Popular: React.FC<PopularProps> = () => {
+const Popular: React.FC<PopularProps> = ({ movieData }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(fetchMovieData({ page: 1 }));
-  }, []);
+  const { popularMovies, loading } = movieData;
 
-  const { popularMovies, loading } = useAppSelector(
-    state => state.movie.movies
-  );
+  useEffect(() => {
+    console.log("loading ", loading);
+  }, [loading]);
 
   const handleSee = (movie: Movie) => {
     dispatch(
@@ -122,3 +134,16 @@ const Popular: React.FC<PopularProps> = () => {
 };
 
 export default Popular;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async ({ req }) => {
+    console.log("req ", req);
+    await store.dispatch(fetchMovieData({ page: 1 }));
+
+    return {
+      props: {
+        movieData: store.getState().movie.movies,
+      },
+    };
+  }
+);

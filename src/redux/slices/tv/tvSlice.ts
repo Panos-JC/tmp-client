@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { AnyAction, createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
 import { fetchTv } from "./actions/fetchTv";
 import { fetchTvData } from "./actions/fetchTvData";
 import { initialTvDetails, Tv, TvCredits, TvDetails } from "./types";
@@ -32,6 +33,12 @@ export const tvSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: builder => {
+    builder.addCase(HYDRATE, (state, action: AnyAction) => {
+      return {
+        ...state,
+        ...action.payload.tv,
+      };
+    });
     // Fetch tv data
     builder.addCase(fetchTvData.pending, state => {
       state.tv.loading = true;

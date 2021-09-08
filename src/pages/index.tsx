@@ -1,5 +1,5 @@
 // React / next
-import React, { useEffect } from "react";
+import React from "react";
 import Head from "next/head";
 import { ImCheckmark } from "react-icons/im";
 
@@ -16,29 +16,34 @@ import { fetchMovieData } from "../redux/slices/movie/actions/fetchMovieData";
 import { fetchTvData } from "../redux/slices/tv/actions/fetchTvData";
 import { unsee } from "../redux/slices/movie/actions/unsee";
 import { Movie } from "../redux/slices/movie/types";
-
-// Local files
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import getImageUrl from "../utils/getImageUrl";
-import { movieGenres } from "../utils/constants/genreIds";
 import { Tv } from "../redux/slices/tv/types";
 import { watchTv } from "../redux/slices/tv/actions/watchTv";
 import { unwatchTv } from "../redux/slices/tv/actions/unwatchTv";
+import { wrapper } from "../redux/store";
 
-export default function Home() {
+// Local files
+import { useAppDispatch } from "../hooks/hooks";
+import getImageUrl from "../utils/getImageUrl";
+import { movieGenres } from "../utils/constants/genreIds";
+
+interface HomeProps {
+  movieData: {
+    popularMovies: Movie[];
+    topRatedMovies: Movie[];
+    loading: boolean;
+  };
+  tvData: {
+    popularTv: Tv[];
+    topRatedTv: Tv[];
+    loading: boolean;
+  };
+}
+
+const Home: React.FC<HomeProps> = ({ movieData, tvData }) => {
   const dispatch = useAppDispatch();
 
-  const { popularMovies, loading: moviesLoading } = useAppSelector(
-    state => state.movie.movies
-  );
-  const { popularTv, loading: tvLoading } = useAppSelector(
-    state => state.tv.tv
-  );
-
-  useEffect(() => {
-    dispatch(fetchMovieData({ page: 1 }));
-    dispatch(fetchTvData({ page: 1 }));
-  }, []);
+  const { popularMovies, loading: moviesLoading } = movieData;
+  const { popularTv, loading: tvLoading } = tvData;
 
   const handleSee = (movie: Movie) => {
     dispatch(
@@ -176,4 +181,20 @@ export default function Home() {
       </Layout>
     </div>
   );
-}
+};
+
+export default Home;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async () => {
+    await store.dispatch(fetchMovieData({ page: 1 }));
+    await store.dispatch(fetchTvData({ page: 1 }));
+
+    return {
+      props: {
+        movieData: store.getState().movie.movies,
+        tvData: store.getState().tv.tv,
+      },
+    };
+  }
+);

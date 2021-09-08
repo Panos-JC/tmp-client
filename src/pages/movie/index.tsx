@@ -1,5 +1,5 @@
 // React
-import React, { useEffect } from "react";
+import React from "react";
 import { ImCheckmark } from "react-icons/im";
 
 // Components
@@ -16,22 +16,23 @@ import { unsee } from "../../redux/slices/movie/actions/unsee";
 import { Movie } from "../../redux/slices/movie/types";
 
 // Local files
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch } from "../../hooks/hooks";
 import { movieGenres } from "../../utils/constants/genreIds";
 import getImageUrl from "../../utils/getImageUrl";
+import { wrapper } from "../../redux/store";
 
-interface moviesProps {}
+interface moviesProps {
+  movieData: {
+    popularMovies: Movie[];
+    topRatedMovies: Movie[];
+    loading: boolean;
+  };
+}
 
-const Movies: React.FC<moviesProps> = ({}) => {
+const Movies: React.FC<moviesProps> = ({ movieData }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(fetchMovieData({ page: 1 }));
-  }, []);
-
-  const { popularMovies, topRatedMovies, loading } = useAppSelector(
-    state => state.movie.movies
-  );
+  const { popularMovies, topRatedMovies, loading } = movieData;
 
   const handleWatchMovie = (media: Movie) => {
     dispatch(
@@ -147,3 +148,15 @@ const Movies: React.FC<moviesProps> = ({}) => {
 };
 
 export default Movies;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async () => {
+    await store.dispatch(fetchMovieData({ page: 1 }));
+
+    return {
+      props: {
+        movieData: store.getState().movie.movies,
+      },
+    };
+  }
+);

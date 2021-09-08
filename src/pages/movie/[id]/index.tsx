@@ -1,6 +1,5 @@
 // React / Next / Chakra
-import React, { useEffect } from "react";
-import { useRouter } from "next/router";
+import React from "react";
 import { Box, VStack } from "@chakra-ui/layout";
 import {
   Breadcrumb,
@@ -24,25 +23,22 @@ import { PersonCard } from "../../../components/PersonCard/PersonCard";
 
 // Redux
 import { fetchMovie } from "../../../redux/slices/movie/actions/fetchMovie";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { wrapper } from "../../../redux/store";
+import { Credits, MovieDetails } from "../../../redux/slices/movie/types";
 
 // Local Files
 import getImageUrl from "../../../utils/getImageUrl";
 
-const Movie: React.FC = () => {
-  const { query } = useRouter();
+interface MovieProps {
+  movie: {
+    movieData: MovieDetails;
+    movieCredits: Credits;
+    loading: boolean;
+  };
+}
 
-  const { id } = query;
-
-  const dispatch = useAppDispatch();
-
-  const { movieData, movieCredits, loading } = useAppSelector(
-    state => state.movie.movieDetails
-  );
-
-  useEffect(() => {
-    if (id) dispatch(fetchMovie({ id: id as string }));
-  }, [id]);
+const Movie: React.FC<MovieProps> = ({ movie }) => {
+  const { movieData, movieCredits, loading } = movie;
 
   return (
     <Layout>
@@ -175,3 +171,17 @@ const Movie: React.FC = () => {
 };
 
 export default Movie;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  store => async ({ params }) => {
+    const { id } = params;
+
+    await store.dispatch(fetchMovie({ id: id as string }));
+
+    return {
+      props: {
+        movie: store.getState().movie.movieDetails,
+      },
+    };
+  }
+);
