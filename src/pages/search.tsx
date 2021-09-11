@@ -72,7 +72,15 @@ const Search: React.FC<SearchProps> = () => {
   if (loading) {
     return (
       <Layout>
-        <Grid templateColumns="repeat(5, 1fr)" gap={4}>
+        <Grid
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(3, 1fr)",
+            lg: "repeat(4, 1fr)",
+            xl: "repeat(5, 1fr)",
+          }}
+          gap={4}
+        >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(item => (
             <Card key={item} width="full" minW="0">
               <Card.CardImage src="" alt="" isLoading={true} />
